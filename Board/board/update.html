@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시글 수정</title>
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+  <!--사이드 바-->
+
+  <aside id="sidebar">
+
+    <div class="top flex main-end">
+
+      <a href="javascript:;" id="btn-close">
+
+        <span>close</span>
+
+      </a>
+
+    </div>
+
+    <ul class="">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../board/list.html">Board</a></li>
+      <li><a href="../gallery/list.html">Gallery</a></li>
+    </ul>
+
+  </aside>
+
+
+  <!--헤더-->
+
+  <header>
+
+    <!--로그인 | 회원가입-->
+
+    <div class="util">
+
+
+
+    </div>
+
+    <!-- 메인메뉴-->
+
+    <div class="menu">
+
+      <nav>
+
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../board/list.html">Board</a></li>
+          <li><a href="../gallery/list.html">Gallery</a></li>
+        </ul>
+
+      </nav>
+
+    </div>
+
+
+  </header>
+
+  <!--메인-->
+
+  <section class="main container">
+    <div class="inner">
+
+      <div class="main-title">
+        <h1>게시글 수정</h1>
+        <p>커뮤니티 게시글 정보를 수정합니다.</p>
+      </div>
+
+
+      <table class="board">
+        <tr>
+
+          <td class="label">제목</td>
+          <td class="data">
+            <h5 id="title"></h5>
+
+          </td>
+
+        </tr>
+        <tr>
+
+          <td class="label">작성자</td>
+          <td class="data">
+            <h5 id="writer"></h5>
+
+          </td>
+
+        </tr>
+        <tr>
+
+          <td class="label">내용</td>
+          <td class="data">
+            <p id="content"></p>
+
+          </td>
+
+        </tr>
+
+      </table>
+
+
+      <div class="btn-box">
+
+        <div class="item">
+
+          <a href="list.html" class="btn">목록</a>
+
+        </div>
+        <div class="item">
+
+          <a href="javascript:;" class="btn btn-update">수정</a>
+          <a href="javascript:;" class="btn btn-delete">삭제</a>
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+
+  </section>
+
+
+
+  <script src="../js/jquery-3.7.1.min.js"></script>
+  <script src="../js/main.js"></script>
+
+  <script>
+
+    const urlParams = new URLSearchParams(location.search)
+    //loaction.search는 GET방식의 쿼리스트링이 들어있습니다.
+    //따라서, URLSearchParams는 해당 쿼리스트링의 파라미터를 저장하는 셈입니다.
+    let boardNo = urlParams.get(`boardNo`)
+
+    getBoard()
+
+
+
+    //게시글 조회
+    function getBoard() {
+
+      const url = `http://192.168.30.119:8080/api/board?boardNo= ` + boardNo
+
+      //GET방식으로 매핑합니다.
+
+      $.ajax({
+
+        url: url,
+        type: `GET`,
+        success: function (response) {
+          let board = response
+
+
+          $(`#title`).val(board.title)
+          $(`#writer`).val(board.writer)
+          $(`#content`).val(board.content)
+
+        },
+        error: function (error) {
+
+        }
+
+      })
+
+    }
+
+    //수정 버튼 - 클릭 이벤트
+
+    $(`.btn-update`).on(`click`, function () {
+
+      let url = `http://192.168.30.119:8080/api/board?boardNo=`
+
+      let title = $(`#title`).val()
+      let writer = $(`#writer`).val()
+      let content = $(`#content`).val()
+
+      let data = {
+        'boardNo': boardNo,
+        'title' : title,
+        'writer' : writer,
+        'content' : content
+      }
+
+      $.ajax({
+
+        type: `PUT`,
+        data: JSON.stringify(data),
+        contentType: `application/json`,
+        dataType:`text`,
+        success: function (response, status) {
+
+          alert(`수정 완료`)
+          console.log(response)
+          console.log(status)
+
+          //읽기 페이지로 이동
+          location.href = `read.html?boardNo = ` + boardNo
+
+        }, error: function (error) {
+          console.log(error)
+        }
+      })
+
+    })
+
+    //삭제 버튼 - 클릭 이벤트
+
+    $(`.btn-delete`).on(`click`, function () {
+
+      let check = confirm(`정말로 수정하시겠습니까?`)
+
+      if (!check) return
+
+
+      //게시글 삭제요청
+      let url = `http://192.168.30.119:8080/api/board?boardNo=`
+
+      let data = {
+        'boardNo': boardNo
+      }
+
+      $.ajax({
+
+        type: `DELETE`,
+        data: JSON.stringify(data),
+        contentType: `application/json`,
+        dataType:`text`,  //응답받을 response의 데이터타입을 지정해줘야합니다.
+
+        //success와 error의 기준은, response가 올바른 형태의 타입으로 넘어오는것까지 포함입니다.
+        success: function (response, status) {
+
+          alert(`삭제 완료`)
+          console.log(response)
+          console.log(status)
+          location.href = `list.html`
+
+        }, error: function (error) {
+          console.log(error)
+        }
+      })
+    })
+
+
+
+
+
+
+
+  </script>
+
+</body>
+
+</html>

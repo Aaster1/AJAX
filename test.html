@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <form action="" enctype="application/x-www-form-urlencoded"></form>
+    <form action="" enctype="multipart/form-data">
+        <input type="file" name="file" id="file" multiple>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+
+        // AJAX 
+        // 요청 메시지
+        // - method
+        // - data
+        // - contentType
+
+        let url = `http://192.168.30.119:8080/api/test`
+
+        let data = {
+            name : '김조은',
+        }
+
+        let formData = new FormData()
+        formData.append('name', '김조은')
+        // 파일 가져오기
+        let file = $('#file')[0]        // 파일 정보
+        console.log(file)
+        let files = file.files          // files : 파일 데이터 목록
+        for (let i = 0; i < files.length; i++) {
+            formData.append('file', files[i])
+        }
+
+        $.ajax({
+            url         : url,              // 요청 경로 
+            type        : 'POST',            // GET, POST, PUT, DELETE
+            data        : data,             // 요청 데이터
+            contentType : `application/json`,               // 요청 컨텐츠 형식
+            // contentType  : application/x-www-form-urlencoded(기본값)
+            // contentType  : applcation/json,
+            // contentType  : multipart/form-data,
+            //dataType : ``,                  //응답 데이터 타입
+            // dataType     : `text`,`json`,`xml`,`html`
+            // 응답 성공 시, 실행할 함수
+            success:complete,   //이 때 콜백함수를 호출하는 기준을 곰곰히 생각해보자
+
+            // 응답 실패 시, 실행할 함수
+            // 1: 요청 객체
+            // 2: 상태
+            // 3: 에러 정보 객체
+            error:function(error){
+
+            }
+        })
+
+
+        //응답 성공 시, 함수의 매개변수
+        //1 : 응답 데이터
+        //2 : 응답 상태 코드
+        //3 : 요청 객체
+        function complete(response,status,request){
+
+        }
+
+
+
+        //ajax 다수 사용 시 함수화 시켜 씁시다~ 매개변수는 필요한 만큼만~
+
+        //호출
+        //$ajax(`/api/test`,`GET`,data,`application/json`,complete,func())
+
+
+        //기억나실지 모르곘지만, 매개변수에 =''을 붙이면 매개변수 비활용 시 디폴트 값으로 갑니다. 하지만 아래처럼 중간에 디폴트값은 넣을 수 없어요. 마지막 매개변수만 가능합니다.
+        function $ajax(url,method,data,contentType='',completed,failed){
+
+          $.ajax({
+            url : url,
+            type:method,
+            data:data,
+            contentType:contentType,
+            success:completed,
+            error:failed
+          })
+
+        }
+
+
+    </script>
+</body>
+</html>
